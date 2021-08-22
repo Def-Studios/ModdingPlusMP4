@@ -63,6 +63,12 @@
 	<assets path="assets/scripts"/>
 	<assets path="NOTICE"/>
 	<assets path="LICENSE"/>
+	<assets path="assets/videos" exclude="*.mp3" if="web"/>
+	<assets path="assets/videos" exclude="*.ogg" unless="web"/>
+	
+	<assets path="plugins/" rename='' if="windows"/>
+	<assets path="dlls/" rename='' if="windows"/>
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
@@ -85,6 +91,7 @@
 	<!--haxelib name="extension-webm" if="desktop" -->
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
+
 
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->
