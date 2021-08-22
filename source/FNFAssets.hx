@@ -51,6 +51,7 @@ class FNFAssets {
             return Assets.getText(id);
         #end
     }
+		
 	/**
 	 * Get json, auto checking extensions.
 	 * @param id Path without extension

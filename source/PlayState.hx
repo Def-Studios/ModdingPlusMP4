@@ -91,6 +91,7 @@ enum abstract DisplayLayer(Int) from Int to Int {
 }
 class PlayState extends MusicBeatState
 {
+	public static var cutscene = true;
 	public static var customPrecence = FNFAssets.getText("assets/discord/presence/play.txt");
 	public static var curStage:String = '';
 	public static var SONG:SwagSong;
@@ -525,6 +526,15 @@ class PlayState extends MusicBeatState
             case 'philly-nice': songLowercase = 'philly';
         }
 		#end
+		if (FNFAssets.exists("assets/videos/" + SONG.song +".mp4", None)) {
+			if (cutscene == true) {
+				var video:MP4Handler = new MP4Handler();
+	
+	
+				video.playMP4(Paths.video(SONG.song), new PlayState()); 
+				inCutscene = true;
+			}
+		}
 		Note.getFrames = true;
 		Note.specialNoteJson = null;
 		if (FNFAssets.exists('assets/data/${SONG.song.toLowerCase()}/noteInfo.json')) {
@@ -1182,6 +1192,7 @@ class PlayState extends MusicBeatState
 			}
 		});
 	}
+	
 	function videoIntro(filename:String) {
 		startCountdown();
 		/*
@@ -4081,7 +4092,7 @@ class PlayState extends MusicBeatState
 		setAllHaxeVar('curBeat', curBeat);
 		callAllHScript('beatHit', [curBeat]);
 	}
-	public static function updatePrecence() {
+	function updatePrecence() {
 		#if windows
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(customPrecence
