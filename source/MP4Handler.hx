@@ -123,6 +123,7 @@ class MP4Handler
 
 		if (finishCallback != null)
 		{
+			PlayState.cutscene = false;
 			LoadingState.loadAndSwitchState(finishCallback);
 		}
 	}

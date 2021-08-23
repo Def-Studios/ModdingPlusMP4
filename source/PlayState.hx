@@ -526,15 +526,7 @@ class PlayState extends MusicBeatState
             case 'philly-nice': songLowercase = 'philly';
         }
 		#end
-		if (FNFAssets.exists("assets/videos/" + SONG.song +".mp4", None)) {
-			if (cutscene == true) {
-				var video:MP4Handler = new MP4Handler();
-	
-	
-				video.playMP4(Paths.video(SONG.song), new PlayState()); 
-				inCutscene = true;
-			}
-		}
+
 		Note.getFrames = true;
 		Note.specialNoteJson = null;
 		if (FNFAssets.exists('assets/data/${SONG.song.toLowerCase()}/noteInfo.json')) {
@@ -895,7 +887,15 @@ class PlayState extends MusicBeatState
 			camFollow = prevCamFollow;
 			prevCamFollow = null;
 		}
-
+		if (FNFAssets.exists("assets/videos/" + SONG.song +".mp4", None)) {
+			if (cutscene == true) {
+				var video:MP4Handler = new MP4Handler();
+	
+	
+				video.playMP4(Paths.video(SONG.song), new PlayState()); 
+				inCutscene = true;
+			}
+		}
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04);
