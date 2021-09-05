@@ -146,7 +146,7 @@ class FreeplayState extends MusicBeatState
 		}
 		#if windows
 		// Updating Discord Rich Presence
-		var customPrecence = FNFAssets.getText("assets/discord/presence/freeplay.txt");
+		var customPrecence = TitleState.discordStuff.freeplay;
 		Discord.DiscordClient.changePresence(customPrecence, null);
 		#end
 		var isDebug:Bool = false;

@@ -1,13 +1,14 @@
 package;
 
+#if web
+import js.lib.intl.RelativeTimeFormat.RelativeTimeUnit;
+#end
 import openfl.Lib;
 import flixel.util.typeLimit.OneOfTwo;
 import Character.EpicLevel;
-import FNFAssets.HScriptAssets;
 import flixel.ui.FlxButton.FlxTypedButton;
 import Section.SwagSection;
 import Song.SwagSong;
-import WiggleEffect.WiggleEffectType;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -190,7 +191,6 @@ class PlayState extends MusicBeatState
 	public var doof:DialogueBox;
 
 
-	var wiggleShit:WiggleEffect = new WiggleEffect();
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -259,6 +259,8 @@ class PlayState extends MusicBeatState
 	var loveMultiplier:Float = 0;
 	var poisonMultiplier:Float = 0;
 	var goodCombo:Bool = false;
+	public var player1GoodHitSignal:Signal<Note>;
+	public var player2GoodHitSignal:Signal<Note>;
 	private var judgementList:Array<String> = [];
 	private var preferredJudgement:String = '';
 	/**
@@ -346,6 +348,9 @@ class PlayState extends MusicBeatState
 		interp.variables.set("mustHit", false);
 		interp.variables.set("strumLineY", strumLine.y);
 		interp.variables.set("hscriptPath", path);
+		interp.variables.set("startShader", function (shader:String) { 
+			return (new ShaderHandler(shader)); // wigglestuff
+		});
 		interp.variables.set("boyfriend", boyfriend);
 		interp.variables.set("gf", gf);
 		interp.variables.set("dad", dad);
@@ -403,20 +408,6 @@ class PlayState extends MusicBeatState
 		interp.variables.set("setDefaultZoom", function(zoom:Float){
 			defaultCamZoom = zoom;
 			FlxG.camera.zoom = zoom;
-		});
-		interp.variables.set("getFile", function(location:String, fileType:String){
-			if (fileType == "json"){
-				CoolUtil.parseJson(FNFAssets.getJson(location));
-			}
-			if (fileType == "hscript"){
-				CoolUtil.parseJson(FNFAssets.getHscript(location));
-			}
-			if (fileType == "txt"){
-				FNFAssets.getText(location + ".txt");
-			}
-			if (fileType == "bitmap"){
-				FNFAssets.getBitmapData(location + ".png");
-			}
 		});
 		interp.variables.set("removeSprite", function(sprite) {
 			remove(sprite);
@@ -686,6 +677,8 @@ class PlayState extends MusicBeatState
 		} else {
 			ModifierState.scoreMultiplier = 1;
 		}
+		player1GoodHitSignal = new Signal<Note>();
+		player2GoodHitSignal = new Signal<Note>();
 		// rebind always, to support djkf
 		if (!opponentPlayer && !duoMode) {
 			controls.setKeyboardScheme(Solo(false));
@@ -3926,15 +3919,15 @@ class PlayState extends MusicBeatState
 			else
 				health += 0.005 * healthGainMultiplier;
 			*/
-			var goodhit = note.wasGoodHit;
 			if (note.shouldBeSung) {
 				actingOn.sing(note.noteData, false, actingOn.altNum);
+				// callAllHScript("noteHit", [playerOne, note, goodhit]);
+				
+				if (OptionsHandler.options.hitSounds){
+					FlxG.sound.play(FNFAssets.getSound("assets/sounds/hitSound.ogg"));
+				}
 				if (playerOne)
 					callAllHScript("playerOneSing", []);
-					callAllHScript("noteHit", [playerOne, note, goodhit]);
-					if (OptionsHandler.options.hitSounds){
-						FlxG.sound.play(FNFAssets.getSound("assets/sounds/hitSound.ogg"));
-					}
 				else
 					callAllHScript("playerTwoSing", []);
 				var strums = playerOne ? playerStrums : enemyStrums;
@@ -3953,12 +3946,15 @@ class PlayState extends MusicBeatState
 			note.wasGoodHit = true;
 			var goodhit = note.wasGoodHit;
 			vocals.volume = 1;
-
+			if (playerOne)
+				player1GoodHitSignal.trigger(note);
+			else
+				player2GoodHitSignal.trigger(note);
+			callAllHScript("noteHit", [playerOne, note, goodhit]);
 			note.kill();
 			notes.remove(note, true);
 			note.destroy();
-
-			callAllHScript("noteHit", [playerOne, note, goodhit]);
+			
 			
 				
 			
@@ -4068,7 +4064,6 @@ class PlayState extends MusicBeatState
 				boyfriend.dance();
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
-		wiggleShit.update(Conductor.crochet);
 		
 		if (!endingSong && camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
 		{

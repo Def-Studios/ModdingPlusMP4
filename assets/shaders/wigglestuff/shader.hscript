@@ -1,8 +1,3 @@
-package;
-
-// STOLEN FROM HAXEFLIXEL DEMO LOL
-import flixel.system.FlxAssets.FlxShader;
-
 enum WiggleEffectType
 {
 	DREAMY;
@@ -14,44 +9,44 @@ enum WiggleEffectType
 
 class WiggleEffect
 {
-	public var shader(default, null):WiggleShader = new WiggleShader();
-	public var effectType(default, set):WiggleEffectType = DREAMY;
-	public var waveSpeed(default, set):Float = 0;
-	public var waveFrequency(default, set):Float = 0;
-	public var waveAmplitude(default, set):Float = 0;
+	public var shader(default, null) = new WiggleShader();
+	public var effectType(default, set) = DREAMY;
+	public var waveSpeed(default, set) = 0;
+	public var waveFrequency(default, set) = 0;
+	public var waveAmplitude(default, set) = 0;
 
-	public function new():Void
+	public function new()
 	{
 		shader.uTime.value = [0];
 	}
 
-	public function update(elapsed:Float):Void
+	public function update(elapsed)
 	{
 		shader.uTime.value[0] += elapsed;
 	}
 
-	function set_effectType(v:WiggleEffectType):WiggleEffectType
+	function set_effectType(v)
 	{
 		effectType = v;
 		shader.effectType.value = [WiggleEffectType.getConstructors().indexOf(Std.string(v))];
 		return v;
 	}
 
-	function set_waveSpeed(v:Float):Float
+	function set_waveSpeed(v)
 	{
 		waveSpeed = v;
 		shader.uSpeed.value = [waveSpeed];
 		return v;
 	}
 
-	function set_waveFrequency(v:Float):Float
+	function set_waveFrequency(v)
 	{
 		waveFrequency = v;
 		shader.uFrequency.value = [waveFrequency];
 		return v;
 	}
 
-	function set_waveAmplitude(v:Float):Float
+	function set_waveAmplitude(v)
 	{
 		waveAmplitude = v;
 		shader.uWaveAmplitude.value = [waveAmplitude];
@@ -126,8 +121,4 @@ class WiggleShader extends FlxShader
 			vec2 uv = sineWave(openfl_TextureCoordv);
 			gl_FragColor = texture2D(bitmap, uv);
 		}')
-	public function new()
-	{
-		super();
-	}
 }
